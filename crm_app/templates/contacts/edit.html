@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ contact.name }} - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="form-card">
+    <h1>Edit contact</h1>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div class="form-grid">
+        <label>Name {{ form.name(class_='input') }}</label>
+        <label>Email {{ form.email(class_='input') }}</label>
+        <label>Company {{ form.company(class_='input') }}</label>
+        <label>Phone {{ form.phone(class_='input') }}</label>
+        <label>Time zone {{ form.timezone(class_='input') }}</label>
+        <label>Tags {{ form.tags(class_='input') }}</label>
+        <label class="span-full">Notes {{ form.notes(class_='textarea') }}</label>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn">Update</button>
+        <a href="{{ url_for('contacts.view_contact', contact_id=contact.id) }}" class="btn-link">Cancel</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

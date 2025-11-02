@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}{{ contact.name }} - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1>{{ contact.name }}</h1>
+      {% if contact.company %}<p class="subtitle">{{ contact.company }}</p>{% endif %}
+      <p class="meta-inline">
+        {% if contact.email %}<span>{{ contact.email }}</span>{% endif %}
+        {% if contact.phone %}<span>{{ contact.phone }}</span>{% endif %}
+      </p>
+    </div>
+    <div class="header-actions">
+      <a class="btn" href="{{ url_for('actions.add_action', contact_id=contact.id) }}">Add action</a>
+      <a class="btn-link" href="{{ url_for('contacts.edit_contact', contact_id=contact.id) }}">Edit</a>
+    </div>
+  </section>
+
+  <section class="grid two-columns">
+    <article class="card">
+      <header><h2>Next actions</h2></header>
+      <ul class="list">
+        {% for action in contact.actions %}
+          <li>
+            <div>
+              <strong>{{ action.title }}</strong>
+              {% if action.due_date %}
+                <time>{{ action.due_date.strftime('%b %d, %Y') }}</time>
+              {% endif %}
+              {% if action.status == 'completed' %}
+                <span class="status status-success">Completed</span>
+              {% endif %}
+            </div>
+            {% if action.status == 'pending' %}
+              <a class="btn-link" href="{{ url_for('actions.complete_action', action_id=action.id) }}">Complete</a>
+            {% endif %}
+          </li>
+        {% else %}
+          <li>No actions yet.</li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="card">
+      <header><h2>Email suggestions</h2></header>
+      <ul class="list">
+        {% for suggestion in contact.email_suggestions %}
+          <li>
+            <div>
+              <strong>{{ suggestion.suggested_subject }}</strong>
+              <p>{{ suggestion.suggested_body|truncate(100) }}</p>
+              <p class="meta-inline">
+                <span>Status: {{ suggestion.status.value }}</span>
+                {% if suggestion.suggested_send_at %}
+                  <time>Suggested {{ suggestion.suggested_send_at.strftime('%b %d, %H:%M') }}</time>
+                {% endif %}
+              </p>
+            </div>
+            <div class="stacked-actions">
+              <form method="post" action="{{ url_for('emails.refresh_suggestion', suggestion_id=suggestion.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-link">Refresh</button>
+              </form>
+              <a class="btn-link" href="{{ url_for('emails.suggestion_inbox') }}">Review</a>
+            </div>
+          </li>
+        {% else %}
+          <li>No suggestions yet. <a href="{{ url_for('emails.generate_suggestion', contact_id=contact.id) }}">Generate one</a>.</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </section>
+
+  {% if contact.notes %}
+    <section class="card">
+      <header><h2>Notes</h2></header>
+      <p>{{ contact.notes }}</p>
+    </section>
+  {% endif %}
+
+  {% if contact.gmail_messages %}
+    <section class="card">
+      <header class="flex-between">
+        <h2>Recent Gmail</h2>
+        <form method="post" action="{{ url_for('gmail.sync') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn-link">Sync now</button>
+        </form>
+      </header>
+      <ul class="list">
+        {% for message in contact.gmail_messages[:10] %}
+          <li>
+            <div>
+              <strong>{{ message.subject or 'No subject' }}</strong>
+              <p>{{ message.snippet }}</p>
+              {% if message.received_at %}
+                <time>{{ message.received_at.strftime('%b %d, %Y %H:%M') }}</time>
+              {% endif %}
+            </div>
+            <span class="status {{ 'status-info' if message.direction.value == 'incoming' else 'status-muted' }}">{{ message.direction.value }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+{% endblock %}

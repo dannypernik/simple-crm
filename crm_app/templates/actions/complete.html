@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Action - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="form-card">
+    <h1>Complete action</h1>
+    <p><strong>{{ action.contact.name }}</strong> - {{ action.title }}</p>
+    <form method="post">
+      {{ form.hidden_tag() }}
+
+      <label>Completion notes {{ form.completion_notes(class_='textarea') }}</label>
+
+      <fieldset>
+        <legend>Schedule the next action</legend>
+        <div class="form-grid">
+          <label>Action {{ form.new_title(class_='input') }}</label>
+          <label>Due date {{ form.new_due_date(class_='input') }}</label>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Complete action</button>
+        <a href="{{ url_for('main.dashboard') }}" class="btn-link">Cancel</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

@@ -1,0 +1,12 @@
+Flask>=3.0.0
+Flask-SQLAlchemy>=3.1.1
+Flask-Migrate>=4.0.7
+Flask-WTF>=1.2.1
+WTForms[email]>=3.1.2
+python-dotenv>=1.0.1
+apscheduler>=3.10.4
+google-api-python-client>=2.133.0
+google-auth>=2.35.0
+google-auth-oauthlib>=1.2.1
+openai>=1.51.0
+gunicorn>=22.0.0

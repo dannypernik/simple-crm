@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Flow CRM{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container header-bar">
+        <a href="{{ url_for('main.dashboard') }}" class="brand">Flow CRM</a>
+        <nav>
+          <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('contacts.create_contact') }}">Add Contact</a>
+          <a href="{{ url_for('contacts.upload_contacts') }}">Import CSV</a>
+          <a href="{{ url_for('emails.suggestion_inbox') }}">Email Suggestions</a>
+          {% if gmail_connected %}
+            <span class="gmail-chip" title="{{ gmail_account }}">Gmail linked</span>
+            <form method="post" action="{{ url_for('gmail.disconnect') }}" class="nav-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn-link">Disconnect</button>
+            </form>
+          {% else %}
+            <a href="{{ url_for('gmail.connect') }}" class="btn-link">Connect Gmail</a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      {% include 'includes/flash_messages.html' %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer container">
+      <small>Made with care for fast follow-ups.</small>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

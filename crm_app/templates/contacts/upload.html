@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Import Contacts - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="form-card">
+    <h1>Import contacts</h1>
+    <p>Upload a CSV with headers: <code>Name</code>, <code>Email</code>, <code>Company</code>, <code>Phone</code>, <code>Notes</code>, <code>Tags</code>, <code>Next Action</code>, <code>Due Date</code>.</p>
+    <form method="post" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <label class="file-input">{{ form.file() }}</label>
+      <div class="form-actions">
+        <button type="submit" class="btn">Import</button>
+        <a href="{{ url_for('main.dashboard') }}" class="btn-link">Cancel</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
