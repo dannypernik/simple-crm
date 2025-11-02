@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Email Suggestions - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1>Email suggestions</h1>
+      <p class="subtitle">Review, edit, and batch schedule outreach in minutes.</p>
+    </div>
+    <form method="post" action="{{ url_for('gmail.sync') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn-link">Sync Gmail</button>
+    </form>
+  </section>
+
+  <section class="suggestion-list">
+    {% for suggestion in suggestions %}
+      <article class="card">
+        <header class="flex-between">
+          <div>
+            <h2>{{ suggestion.contact.name }}</h2>
+            <p class="subtitle">Next action: {{ suggestion.action.title if suggestion.action else 'General follow-up' }}</p>
+          </div>
+          <span class="status {{ 'status-warning' if suggestion.status.value == 'needs_review' else 'status-info' }}">{{ suggestion.status.value.replace('_', ' ') }}</span>
+        </header>
+
+        <form method="post" class="suggestion-form">
+          {{ forms[suggestion.id].hidden_tag() }}
+          <div class="form-grid">
+            <label>Subject {{ forms[suggestion.id].subject(class_='input') }}</label>
+            <label>Send at {{ forms[suggestion.id].suggested_send_at(class_='input') }}</label>
+            <label>Status {{ forms[suggestion.id].status(class_='input') }}</label>
+            <label class="span-full">Body {{ forms[suggestion.id].body(class_='textarea tall') }}</label>
+          </div>
+          {% if suggestion.rationale %}
+            <p class="rationale">Why: {{ suggestion.rationale }}</p>
+          {% endif %}
+          <div class="form-actions justify-between">
+            <div class="left-actions">
+              <button type="submit" class="btn">Save &amp; schedule</button>
+            </div>
+            <div class="right-actions">
+              <button type="submit" form="refresh-{{ suggestion.id }}" class="btn-link">Regenerate</button>
+            </div>
+          </div>
+        </form>
+        <form id="refresh-{{ suggestion.id }}" method="post" action="{{ url_for('emails.refresh_suggestion', suggestion_id=suggestion.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        </form>
+      </article>
+    {% else %}
+      <p class="empty">No suggestions yet. Generate from the dashboard to begin.</p>
+    {% endfor %}
+  </section>
+{% endblock %}

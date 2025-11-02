@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1>Today&apos;s Focus</h1>
+      <p class="subtitle">Contacts ordered by the next meaningful action.</p>
+    </div>
+    <form method="get" class="search-form">
+      <input type="search" name="q" placeholder="Search contacts" value="{{ search }}">
+      <button type="submit">Search</button>
+    </form>
+  </section>
+
+  <section class="grid">
+    {% for contact in contacts %}
+      <article class="card contact-card">
+        <header>
+          <div>
+            <h2>{{ contact.name }}</h2>
+            {% if contact.company %}<span class="tag">{{ contact.company }}</span>{% endif %}
+            {% if contact.tags %}
+              <span class="tag tag-muted">{{ contact.tags }}</span>
+            {% endif %}
+          </div>
+          <div class="card-actions">
+            <a href="{{ url_for('contacts.view_contact', contact_id=contact.id) }}" class="btn-link">View</a>
+            <form action="{{ url_for('emails.generate_suggestion', contact_id=contact.id) }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn-link">Suggest email</button>
+            </form>
+          </div>
+        </header>
+
+        <dl class="meta">
+          {% if contact.email %}<div><dt>Email</dt><dd>{{ contact.email }}</dd></div>{% endif %}
+          {% if contact.phone %}<div><dt>Phone</dt><dd>{{ contact.phone }}</dd></div>{% endif %}
+          {% if contact.notes %}<div><dt>Notes</dt><dd>{{ contact.notes|truncate(120) }}</dd></div>{% endif %}
+        </dl>
+
+        <div class="next-action">
+          {% if contact.next_action %}
+            <p class="label">Next action</p>
+            <p class="title">{{ contact.next_action.title }}</p>
+            <p class="due">
+              {% if contact.next_action.due_date %}
+                Due {{ contact.next_action.due_date.strftime('%b %d, %Y') }}
+              {% else %}
+                No due date
+              {% endif %}
+            </p>
+            <a class="btn" href="{{ url_for('actions.complete_action', action_id=contact.next_action.id) }}">Mark complete</a>
+          {% else %}
+            <p>No upcoming actions. <a href="{{ url_for('actions.add_action', contact_id=contact.id) }}">Create one</a>.</p>
+          {% endif %}
+        </div>
+      </article>
+    {% else %}
+      <p class="empty">No contacts yet. <a href="{{ url_for('contacts.create_contact') }}">Add your first contact.</a></p>
+    {% endfor %}
+  </section>
+
+  <section class="card upcoming">
+    <header>
+      <h2>Upcoming actions</h2>
+    </header>
+    <ul>
+      {% for action in upcoming_actions %}
+        <li>
+          <strong>{{ action.contact.name }}</strong>
+          <span>{{ action.title }}</span>
+          {% if action.due_date %}
+            <time>{{ action.due_date.strftime('%b %d, %Y') }}</time>
+          {% endif %}
+        </li>
+      {% else %}
+        <li>No pending actions.</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}

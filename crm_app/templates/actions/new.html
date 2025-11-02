@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Add Action - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="form-card">
+    <h1>New action for {{ contact.name }}</h1>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div class="form-grid">
+        <label>Action {{ form.title(class_='input') }}</label>
+        <label>Due date {{ form.due_date(class_='input') }}</label>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn">Add action</button>
+        <a href="{{ url_for('contacts.view_contact', contact_id=contact.id) }}" class="btn-link">Cancel</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

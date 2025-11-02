@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Add Contact - Flow CRM{% endblock %}
+
+{% block content %}
+  <section class="form-card">
+    <h1>Add contact</h1>
+    <form method="post">
+      {{ contact_form.hidden_tag() }}
+      {{ action_form.hidden_tag() }}
+
+      <fieldset>
+        <legend>Contact details</legend>
+        <div class="form-grid">
+          <label>Name {{ contact_form.name(class_='input') }}</label>
+          <label>Email {{ contact_form.email(class_='input') }}</label>
+          <label>Company {{ contact_form.company(class_='input') }}</label>
+          <label>Phone {{ contact_form.phone(class_='input') }}</label>
+          <label>Time zone {{ contact_form.timezone(class_='input') }}</label>
+          <label>Tags {{ contact_form.tags(class_='input') }}</label>
+          <label class="span-full">Notes {{ contact_form.notes(class_='textarea') }}</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Initial next action</legend>
+        <div class="form-grid">
+          <label>Action {{ action_form.title(class_='input') }}</label>
+          <label>Due date {{ action_form.due_date(class_='input') }}</label>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Save contact</button>
+        <a href="{{ url_for('main.dashboard') }}" class="btn-link">Cancel</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
